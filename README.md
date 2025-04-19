@@ -2,5 +2,6 @@
 |--------------------------|---------------|---------------|-----------------------|
 | **Databases**            | SQL           | NoSQL         | General Concepts     |
 | **Languages / Libraries**| Python        | Pandas        | PySpark              |
-| **DevOps / Tools**       | Git           | Shell/Bash     | Docker               |
+| **DevOps / Tools**       | Git           | Bash     | Docker               |
 | **Advanced Topics**      | AI            | Big Data      | Cloud Computing      |
+
