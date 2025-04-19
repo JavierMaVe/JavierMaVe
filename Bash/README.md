@@ -11,13 +11,8 @@ Este pequeño kit está diseñado para ayudarte a trabajar más eficientemente e
 | Tema                            | Descripción                                          |
 |---------------------------------|------------------------------------------------------|
 | [📘 Bash](./bash.md)            | Guía completa de Bash para ingeniería de datos       |
-| [🧠 Vim](./vim.md)              | Referencia práctica del editor Vim                   |
 | [✍️ Nano](./nano.md)           | Manual de uso básico del editor Nano                 |
+| [🧠 Vim](./vim.md)              | Referencia práctica del editor Vim                   |
 
 ---
 
-💡 Si estás empezando, te recomendamos comenzar con `nano`, luego pasar a `bash`, y finalmente explorar `vim` cuando busques mayor productividad y personalización.
-
----
-
-¿Quieres una versión con emojis simplificados o completamente sin iconos para mayor compatibilidad?
