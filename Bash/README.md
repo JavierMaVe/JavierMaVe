@@ -49,7 +49,9 @@
 * [5. Scripting Bash para Automatización de Tareas](#5-scripting-bash-para-automatización-de-tareas)  
     * [5.1. Creación y Ejecución de Scripts (`#!/bin/bash`, `chmod +x`)](#51-creación-y-ejecución-de-scripts-binbash-chmod-x)  
     * [5.2. Variables, Comillas y Sustitución de Comandos](#52-variables-comillas-y-sustitución-de-comandos)  
-    * [5.3. Argumentos de Script y Entrada del Usuario (`$@`, `$#`, `read`)](#53-argumentos-de-script-y-entrada-del-usuario----read)  
+    * [5.3. Entrada y Argumentos en Scripts](#53-entrada-y-argumentos-en-scripts)  
+        * [5.3.1. Argumentos de Script (`$0`, `$1`, `$@`, `$#`)](#531-argumentos-de-script-0-1-)  
+        * [5.3.2. Entrada del Usuario (`read`)](#532-entrada-del-usuario-read) 
     * [5.4. Estructuras Condicionales (`if`, `case`)](#54-estructuras-condicionales-if-case)  
     * [5.5. Bucles (`for`, `while`)](#55-bucles-for-while)  
     * [5.6. Funciones para Reutilizar Código](#56-funciones-para-reutilizar-código)  
@@ -703,22 +705,118 @@ echo "Hoy es $fecha"
 
 ---
 
-## 5.3. Argumentos de Script y Entrada del Usuario (`$@`, `$#`, `read`)
+### 5.3. Entrada y Argumentos en Scripts
 
-### 📌 Argumentos:
+En Bash, los scripts pueden recibir **argumentos desde la línea de comandos** y también **solicitar entrada del usuario de forma interactiva**. Ambas formas son fundamentales para crear scripts dinámicos, reutilizables y más flexibles.
+
+---
+
+#### 5.3.1. Argumentos de Script (`$0`, `$1`, `$@`, `$#`)
+
+Cuando ejecutas un script y le pasas parámetros, Bash los asigna a **parámetros posicionales** automáticamente:
 
 ```bash
+#!/bin/bash
+
+echo "Nombre del script: $0"
 echo "Primer argumento: $1"
-echo "Todos los argumentos: $@"
+echo "Segundo argumento: $2"
+echo "Todos: $@"
 echo "Cantidad de argumentos: $#"
 ```
 
-### 📌 Entrada interactiva:
+##### 🔍 Ejemplo de ejecución:
 
 ```bash
-read -p "Ingresa tu nombre: " nombre
+./script.sh archivo.csv 2025
+```
+
+**Resultado:**
+
+```
+Nombre del script: ./script.sh
+Primer argumento: archivo.csv
+Segundo argumento: 2025
+Todos: archivo.csv 2025
+Cantidad de argumentos: 2
+```
+
+##### 🧠 Descripción rápida:
+
+| Variable | Significado |
+|----------|-------------|
+| `$0`     | Nombre del script |
+| `$1`     | Primer argumento |
+| `$2`     | Segundo argumento |
+| `$@`     | Todos los argumentos, separados correctamente |
+| `$*`     | Todos los argumentos como una sola cadena |
+| `$#`     | Número total de argumentos |
+
+##### 📌 Diferencia entre `$@` y `$*`:
+
+```bash
+for arg in "$@"; do
+  echo "arg: $arg"
+done
+```
+
+Este ejemplo **respeta los espacios** en los argumentos.
+
+```bash
+for arg in "$*"; do
+  echo "arg: $arg"
+done
+```
+
+Este los trata como una sola cadena, lo que puede generar errores si hay espacios.
+
+---
+
+#### 5.3.2. Entrada del Usuario (`read`)
+
+Bash también permite **solicitar valores directamente al usuario** con el comando `read`.
+
+##### 📌 Ejemplo básico:
+
+```bash
+#!/bin/bash
+
+read -p "¿Cómo te llamas? " nombre
 echo "Hola, $nombre"
 ```
+
+Cuando se ejecuta:
+
+```
+¿Como te llamas? Ana
+Hola, Ana
+```
+
+##### ✅ Variantes útiles:
+
+```bash
+read -s -p "Introduce tu contraseña: " pass   # Entrada oculta
+read -n 1 -p "¿Deseas continuar? [s/n] " opt   # Solo una tecla
+```
+
+> Usa `read` para configuraciones interactivas, confirmaciones, o cuando no quieras pasar parámetros al iniciar el script.
+
+---
+
+🔁 Combinando ambos (argumentos + read) puedes crear scripts muy flexibles. Por ejemplo:
+
+```bash
+#!/bin/bash
+
+if [ -z "$1" ]; then
+    read -p "Introduce tu nombre: " nombre
+else
+    nombre=$1
+fi
+
+echo "Bienvenido, $nombre"
+```
+
 
 ---
 
