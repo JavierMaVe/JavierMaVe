@@ -207,6 +207,12 @@ Una de las ventajas de Bash es que puedes personalizarlo para que se adapte a tu
 
 Un **alias** es una forma de acortar o modificar un comando para hacerlo más rápido de escribir o más funcional por defecto.
 
+
+#### 👉 Ver todos los alias definidos:
+
+```bash
+alias
+```
 #### 📌 Ejemplos comunes:
 
 ```bash
@@ -215,11 +221,10 @@ alias gs='git status'
 alias py='python3'
 alias cls='clear'
 ```
-
-#### 👉 Ver todos los alias definidos:
+#### 🔨 Para crear un alias:
 
 ```bash
-alias
+alias nombre='comando'
 ```
 
 #### ❌ Eliminar un alias temporalmente:
@@ -232,9 +237,39 @@ unalias ll
 
 Agrega el alias en tu archivo `~/.bashrc` o `~/.bash_profile`:
 
+Una vez guardado, tenemos que recargar con source
+
 ```bash
 echo "alias ll='ls -lh --color=auto'" >> ~/.bashrc
 source ~/.bashrc
+```
+#### 💻 Ejecutar un comando sin alias
+
+```bash
+\ls
+command ls
+/bin/ls
+```
+
+#### 💻 Notas
+
+Un alias no estará disponible en otra ventana de la terminal, a no ser, que se haya guardado en bashrc y recargado con source.
+
+Si creamos un alias con comillas dobles, si cambiamos una variable, no le afectará al alias
+
+```bash
+nombre="Juan"
+alias saludo="echo Hola $nombre"
+nomber="Ana"
+saludo # La salida seguirá siendo Hola Juan
+```
+Si creamos un alias con comillas simples, si cambiamos una variable, esta afectará al alias
+
+```bash
+nombre="Juan"
+alias saludo='echo Hola $nombre'
+nomber="Ana"
+saludo # La salida será ahora Hola Ana
 ```
 
 ---
