@@ -62,7 +62,9 @@ Vim no es como otros editores. Tiene distintos **modos de trabajo**:
 | Palabra anterior        | `b`                |
 | Ir al inicio de línea   | `0`                |
 | Ir al final de línea    | `$`                |
-| Ir a línea N            | `:N`               |
+| Ir al principio del archivo | `gg`           |
+| Ir al final del archivo     | `G`            |
+| Ir a línea N            | `:N` o `Ngg`       |
 | Página arriba/abajo     | `Ctrl + u / Ctrl + d` |
 
 ---
@@ -131,10 +133,15 @@ Vim no es como otros editores. Tiene distintos **modos de trabajo**:
 - `.` → Repite el último comando
 - `u` → Deshacer
 - `Ctrl + r` → Rehacer
-- `:set number` → Mostrar números de línea
+- `:set number o :set nu` → Mostrar números de línea
+- `:set nonumber o :set nonu` → Para ocultar los números de línea
 - `:set relativenumber` → Líneas relativas
 - `:syntax on` → Coloreado de sintaxis
 - `:noh` → Quitar resaltado de búsqueda
+
+Para que aparcezcan todas esas opciones siempres, habrá que crear o modificar ~/.vimrc.
+
+`set nu`
 
 ---
 
@@ -147,5 +154,3 @@ Vim no es como otros editores. Tiene distintos **modos de trabajo**:
 - Curso en YouTube: "Vim for Beginners"
 
 ---
-
-🎯 Aprender Vim puede parecer difícil al principio, pero incluso dominar solo el 20% de sus comandos te hará mucho más eficiente en la terminal.

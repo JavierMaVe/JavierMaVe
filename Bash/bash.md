@@ -7,8 +7,11 @@
     * [1.2. La Terminal como Herramienta de Trabajo](#12-la-terminal-como-herramienta-de-trabajo)  
 
 * [2. Fundamentos Esenciales de la CLI](#2-fundamentos-esenciales-de-la-cli)  
-    * [2.1. Navegación y Gestión Básica del Sistema de Archivos](#21-navegación-y-gestión-básica-del-sistema-de-archivos)  
-        * (`pwd`, `ls`, `cd`, `mkdir`, `rmdir`, `tree`)  
+    * [2.1. Navegación y Gestión Básica del Sistema de Archivos](#21-navegación-y-gestión-básica-del-sistema-de-archivos)
+
+        * (`pwd`, `ls`, `cd`, `mkdir`, `rmdir`, `tree`)
+        
+        * [2.1.1 Atajos de Directorios: ~, ~+, y ~-](#211-atajos-de-directorios)   
     * [2.2. Trabajo con Archivos y Directorios (Foco en Datos)](#22-trabajo-con-archivos-y-directorios-foco-en-datos)  
         * (`touch`, `cp`, `mv`, `rm`, `stat`, `du`, `df`)  
     * [2.3. Visualización de Archivos Grandes](#23-visualización-de-archivos-grandes)  
@@ -34,7 +37,9 @@
     * [3.4. Trabajo con JSON](#34-trabajo-con-json)  
         * [`jq`](#jq---el-procesador-json-de-línea-de-comandos)  
     * [3.5. Redirección de I/O (`>`, `>>`, `<`, `2>`)](#35-redirección-de-io---2)  
-    * [3.6. Combinando Herramientas con Tuberías (Pipes `|`)](#36-combinando-herramientas-con-tuberías-pipes-)  
+    * [3.6. Combinando Herramientas con Tuberías (Pipes `|`)](#36-combinando-herramientas-con-tuberías-pipes-)
+    * [3.7. Sustitución de Procesos (Process Substitution)](#37-sustitución-de-procesos-process-substitution)
+  
 
 * [4. Conectividad y Transferencia de Datos](#4-conectividad-y-transferencia-de-datos)  
     * [4.1. Conexión Remota](#41-conexión-remota)  
@@ -48,12 +53,17 @@
 
 * [5. Scripting Bash para Automatización de Tareas](#5-scripting-bash-para-automatización-de-tareas)  
     * [5.1. Creación y Ejecución de Scripts (`#!/bin/bash`, `chmod +x`)](#51-creación-y-ejecución-de-scripts-binbash-chmod-x)  
-    * [5.2. Variables, Comillas y Sustitución de Comandos](#52-variables-comillas-y-sustitución-de-comandos)  
+    * [5.2. Variables, Comillas y Sustitución de Comandos](#52-variables-comillas-y-sustitución-de-comandos)
+        * [5.2.1. Transformación de Texto con Variables (^^, ,,, etc.)](#521-transformacion-de-texto-con-variables)
+        * [5.2.3. Word Splitting en Bash (Importancia de las comillas)](#523-word-splitting-en-bash-importancia-de-las-comillas)
+
     * [5.3. Entrada y Argumentos en Scripts](#53-entrada-y-argumentos-en-scripts)  
         * [5.3.1. Argumentos de Script (`$0`, `$1`, `$@`, `$#`)](#531-argumentos-de-script-0-1-)  
         * [5.3.2. Entrada del Usuario (`read`)](#532-entrada-del-usuario-read) 
     * [5.4. Estructuras Condicionales (`if`, `case`)](#54-estructuras-condicionales-if-case)  
-    * [5.5. Bucles (`for`, `while`)](#55-bucles-for-while)  
+    * [5.5. Bucles (`for`, `while`)](#55-bucles-for-while)
+        * [5.5.1 Generación de Nombres con Expansión de Llaves)](#551-generación-de-nombres-con-expansión-de-llaves)
+        * [5.5.2. Filename Expansion y Globbing](#552-filename-expansion-y-globbing) 
     * [5.6. Funciones para Reutilizar Código](#56-funciones-para-reutilizar-código)  
     * [5.7. Gestión de Errores y Estado de Salida (`exit`, `$?`, `set -e`, `set -o pipefail`)](#57-gestión-de-errores-y-estado-de-salida-exit--set--e-set--o-pipefail)  
         * [Importancia para orquestadores (Airflow, Cron, etc.)](#importancia-para-orquestadores-airflow-cron-etc)  
@@ -144,9 +154,23 @@ En Bash, puedes moverte entre carpetas y explorar tu sistema de archivos rápida
 | `ls`         | Lista el contenido de un directorio. Usa `ls -l` para una vista detallada y `ls -a` para incluir archivos ocultos. |
 | `cd`         | Cambia de directorio. Ejemplo: `cd /var/log` o `cd ..` para subir un nivel. |
 | `mkdir`      | Crea una carpeta. Ejemplo: `mkdir datos` |
+|               |Podemos utilizar -p para crear `data/raw/2025/logs`. Cuidado con los espacios en blanco
 | `rmdir`      | Elimina un directorio vacío. Para carpetas con contenido, usa `rm -r`. |
 | `tree`       | Muestra la estructura de carpetas en forma de árbol (puede requerir instalación previa). |
 ---
+
+### 2.1.1 Atajos de Directorios
+
+Bash tiene atajos especiales para referirse rápidamente a rutas de directorio:
+
+| Expresión | Significado                          | Ejemplo                               |
+|-----------|--------------------------------------|----------------------------------------|
+| `~`       | Directorio home del usuario actual   | `echo ~` → `/home/usuario`            |
+| `~usuario`| Home de otro usuario (si existe)     | `echo ~root` → `/root`                |
+| `~+`      | Directorio actual (`$PWD`)           | `echo ~+` → ruta completa actual      |
+| `~-`      | Directorio anterior (`$OLDPWD`)      | `echo ~-` → ruta antes del último `cd`|
+
+
 
 ## 2.2. Trabajo con Archivos y Directorios
 
@@ -276,9 +300,26 @@ saludo # La salida será ahora Hola Ana
 
 ---
 
+### 🌍 Constantes
+
+Las **constantes** almacenan información usada por Bash y otros programas. Son valores que no se pueden modificar.
+
+Estas deben de escribirse en mayúsculas.
+
+```bash
+readonly MAX_RETRIES=3
+declare -r USER_TYPE="admin"
+```
+
 ### 🌍 Variables de Entorno
 
 Las **variables de entorno** almacenan información usada por Bash y otros programas. Son especialmente útiles para rutas de datos, tokens, claves, o configuraciones que necesitas reutilizar.
+
+No pueden empezar por número, caracter especial, ni contener espacios. Pero si pueden contener `_`
+
+No puede tener espacios alrededor del `=`
+
+Son case sensitive, así que no es lo mismo valor, que VALOR.
 
 #### 📌 Ejemplo:
 
@@ -287,7 +328,29 @@ export DATA_PATH="/home/usuario/data"
 echo $DATA_PATH
 ```
 
-Puedes usar `$DATA_PATH` en scripts, comandos y otros scripts como si fuera una constante.
+Se puede mostrar su valor con  `echo $nombre`.
+
+Si utilizamos comillas simples, las variables no se mostrarán, se mostrará como un literal.
+
+Al utilizar comillas dobles, se mostrará el valor de la variable.
+
+Si se van a utilizar comillas `'`, habrá que hacerlo con comillas dobles.
+
+Para imprimir caracteres especiales habrá que ponerle `\`, como `\&`
+
+```bash
+echo "I'm learning Windows"
+echo "I'm \"learning" Windows" # Esto muestra: I'm "learning" Windows.
+echo "I'm learning \$os" # Al poner la \, lo convierte en literal y no se muestra el valor.
+```
+
+Podemos utilizar `{}` para nombrarlas y a continuación concatenar texto
+
+```bash
+os=Windows
+echo ${os}11
+# Muestra Windows11
+```
 
 #### ✅ Hacerlas permanentes:
 
@@ -301,6 +364,19 @@ export API_KEY="tu_token_secreto"
 
 ```bash
 printenv
+```
+
+Para mostrar las variables que coincidan, utilizamos grep
+
+```bash
+set | grep HIST # Muestra todas las variables del SHELL
+env | grep HIST # Muestra solo las variables de entorno exportadas
+```
+
+#### 🔎 Quitar una variable (no puede ser readonly)
+
+```bash
+unset nombreVariable
 ```
 
 ---
@@ -493,6 +569,31 @@ Este comando:
 Combinar `grep`, `awk`, `cut`, `jq`, `sort`, `uniq`, `head`, `tail` permite procesar datos complejos sin salir de Bash. Esto es ideal para validaciones rápidas, exploración de datos o preprocesamiento en pipelines.
 
 ---
+## 3.7. Sustitución de Procesos (Process Substitution)
+
+Process Substitution permite tratar la salida de un comando como si fuera un archivo. Es muy útil cuando estás trabajando con herramientas que esperan archivos como entrada, pero tú quieres pasarles la salida de otro comando.
+
+🧠 ¿Cómo funciona?
+Se utiliza esta sintaxis:
+
+<(comando) — la salida del comando se comporta como un archivo.
+
+>(comando) — la entrada para el comando se comporta como un archivo.
+
+Internamente, Bash crea un archivo temporal o un descriptor tipo /dev/fd/63 para conectarlos.
+
+```bash
+diff <(ls carpeta1) <(ls carpeta2)
+```
+```bash
+cat <(echo "Nombre: Juan") <(date)
+```
+```yaml
+# Salida esperada
+Nombre: Juan
+Sat Apr 20 10:25:42 UTC 2025
+
+```
 
 # 4. Conectividad y Transferencia de Datos
 
@@ -673,7 +774,49 @@ chmod +x script.sh
 ./script.sh
 ```
 
-> La línea `#!/bin/bash` se conoce como *shebang* y le dice al sistema que debe ejecutar el script usando Bash.
+Podemos ejecutar el archivo sin darle permisos de ejecución, tan solo tenemos que poner antes la palabra bash.
+
+```bash
+bash script.sh
+```
+
+Comando	¿Qué hace?
+
+`bash script.sh`	Ejecuta el script en un nuevo proceso
+
+`source script.sh`	Ejecuta en el shell actual (misma sesión)
+
+Usamos source para cargar funciones o variables en tu entorno
+
+```bash
+# archivo: funciones.sh
+saludar() {
+  echo "Hola $1"
+}
+```
+
+Si haces lo siguiente funcionará:
+
+```bash
+source funciones.sh
+saludar Juan
+```
+
+Pero si hace esto, no funcionará:
+
+```bash
+bash funciones.sh
+saludar Juan
+```
+
+
+La línea `#!/bin/bash` se conoce como *shebang* y le dice al sistema que debe ejecutar el script usando Bash.
+
+Podemos ver la ruta con which bash: /usr/bin/bash.
+
+Si quisieramos ejecutar Python, haríamos which python3, con lo que nos devuelve /usr/bin/python3.
+
+Para crear un script de Python, pondríamos como primera línea `#!/usr/bin/python`.
 
 ---
 
@@ -698,11 +841,147 @@ echo 'Hola $nombre'   # Hola $nombre
 
 ### 📌 Sustitución de comandos:
 
+La sustitución de comandos permite ejecutar un comando y capturar su resultado directamente en una línea o dentro de una variable. Se usa para integrar dinámicamente la salida de un comando en otros comandos, como echo, asignaciones o condicionales.
+Se puede hacer con $(...) (recomendado) o con backticks `...` (forma antigua).
+Es una herramienta clave para automatizar tareas y construir scripts dinámicos.
+
+```bash
+sudo tar -czf etc-$(date +%F_%H%M).tar.gz /etc/ 2> /dev/null
+```
+
 ```bash
 fecha=$(date)
 echo "Hoy es $fecha"
 ```
 
+### Aritmética con Variables
+
+Bash permite realizar operaciones matemáticas básicas directamente dentro del shell mediante una característica llamada expansión aritmética (arithmetic expansion).
+
+La sintaxis general es:
+
+```bash
+$(( expresión )) 
+```
+La expresión se evalúa como una operación aritmética, y su **resultado reemplaza** al fragmento completo.
+```bash
+echo $((3 + 4))      # 7
+echo $((10 - 3))     # 7
+echo $((2 * 5))      # 10
+echo $((8 / 2))      # 4
+echo $((9 % 4))      # 1  (módulo)
+```
+
+**let** es un builtin de Bash que permite evaluar expresiones aritméticas. La sintaxis es un poco más simple visualmente, pero tiene **limitaciones** y no es tan flexible como **$((...))**.
+
+### Cálculos Avanzados con bc
+bc es una calculadora de línea de comandos que permite realizar operaciones más avanzadas que las que permite Bash por defecto, incluyendo decimales, potencias, raíces y funciones matemáticas.
+Se usa comúnmente junto a echo y | para evaluar expresiones:
+
+```bash
+echo "3 / 2" | bc -l  # → 1.500...
+```
+
+```bash
+# Otra opción
+echo "scale=2;3 / 2" | bc # → 1.50
+```
+```bash
+# Otra forma
+bc <<< "scale=3; 23/7"
+```
+
+Podemos utilizar `bc` para ejecutar en la terminal una calculadora, pudiendo incluir **scale**
+
+### 5.2.1. Transformacion de Texto con Variables 
+
+Bash permite manipular el contenido de una variable directamente en su expansión, sin necesidad de usar comandos externos como tr.
+
+Estos son ejemplos con tr
+
+🔡 Convertir a minúsculas:
+```bash
+echo "LINUX" | tr 'A-Z' 'a-z'
+# salida: linux
+```
+🔠 Convertir a mayúsculas:
+```bash
+echo "bash" | tr 'a-z' 'A-Z'
+# salida: BASH
+```
+❌ Eliminar caracteres específicos:
+```bash
+echo "123-456-7890" | tr -d '-'
+# salida: 1234567890
+```
+Aquí se muestran ejemplos con ^^ y ,,
+
+| Sintaxis   | Descripción                          | Ejemplo                          | Resultado |
+|------------|--------------------------------------|----------------------------------|-----------|
+| `${var^^}` | Convierte a mayúsculas               | `os="linux"` → `${os^^}`         | `LINUX`   |
+| `${var,,}` | Convierte a minúsculas               | `os="LINUX"` → `${os,,}`         | `linux`   |
+| `${var^}`  | Convierte solo la primera letra      | `name="bash"` → `${name^}`       | `Bash`    |
+| `${var,}`  | Minúscula solo de la primera letra   | `name="BASH"` → `${name,}`       | `bASH`    |
+
+### 5.2.3. Word Splitting en Bash (Importancia de las comillas)
+
+🧠 ¿Qué es Word Splitting?
+Word splitting es el proceso mediante el cual Bash divide una cadena en varias palabras (tokens) usando espacios en blanco como separadores, después de expandir variables o comandos.
+
+Esto ocurre automáticamente cuando no se usan comillas.
+
+⚠️ ¿Por qué es importante?
+Si no entiendes cómo funciona el word splitting, puedes:
+
+Romper rutas de archivos con espacios.
+
+Procesar mal listas de argumentos.
+
+Crear errores difíciles de depurar.
+
+```bash
+archivo=datos importantes.txt
+rm $archivo  # ❌ Error: se interpreta como dos argumentos: 'datos' y 'importantes.txt'
+```
+
+```bash
+archivo="datos importantes.txt"
+rm "$archivo"  # ✅ Interpreta correctamente el nombre completo del archivo
+```
+Si hacemos el siguiente ejemplo y lo ponemos entre comillas, lo interpreta como una cadena de texto y no la separa en palabras.
+```bash
+dirs="d1 d2 d3"
+mkdir "$dirs"  # Esto crearía un directorio llamado 'd1 d2 d3'
+```
+### ¿Qué es IFS en Bash?
+
+IFS (Internal Field Separator) es una variable especial en Bash que define qué caracteres se usan como separadores de campos (palabras) al hacer:
+
+Word Splitting ($var)
+
+Lectura con read
+
+Asignación múltiple de variables
+
+Loops como for o while read
+
+Por defecto, IFS separa por:
+
+Espacio ( )
+
+Tabulador (\t)
+
+Salto de línea (\n)
+
+Con este ejemplo podemos incluir la coma como separador
+```bash
+cadena="nombre,apellido,email"
+IFS=',' read -r nombre apellido email <<< "$cadena"
+
+echo "$nombre"
+echo "$apellido"
+echo "$email"
+```
 ---
 
 ### 5.3. Entrada y Argumentos en Scripts
@@ -751,6 +1030,8 @@ Cantidad de argumentos: 2
 | `$@`     | Todos los argumentos, separados correctamente |
 | `$*`     | Todos los argumentos como una sola cadena |
 | `$#`     | Número total de argumentos |
+| `$?`     | Contiene el código de salida del último comando ejecutado
+| `$$`     | Representa el ID del proceso (PID) del script o comando en ejecución
 
 ##### 📌 Diferencia entre `$@` y `$*`:
 
@@ -769,6 +1050,13 @@ done
 ```
 
 Este los trata como una sola cadena, lo que puede generar errores si hay espacios.
+
+Se pueden crear valores por defecto
+
+```bash
+echo "Primer argumento (\$1): ${1:-abc}"
+# Esto hace que si no se pasa primer parámetro, por defecto asigna el valor abc.
+```
 
 ---
 
@@ -793,6 +1081,19 @@ Cuando se ejecuta:
 ¿Como te llamas? Ana
 Hola, Ana
 ```
+
+Si hacemos un read sin comillas, significa que leemos tantas entradas como palabras
+
+```bash
+#!/bin/bash
+
+read name age city
+Jose 33 Sevilla
+```
+
+Esto creará 3 variables: name, age y city 
+
+Si hacemos un read solo, podemos mostrar su valor con `echo $REPLY`
 
 ##### ✅ Variantes útiles:
 
@@ -888,7 +1189,134 @@ while [ $contador -le 5 ]; do
   ((contador++))
 done
 ```
+### 5.5.1. Generación de Nombres con Expansión de Llaves
 
+La expansión de llaves (brace expansion) es una característica muy útil de Bash que permite generar múltiples cadenas de texto o nombres de archivos con una estructura común. Esta técnica es muy práctica para tareas repetitivas, como nombrar archivos, crear directorios, o generar combinaciones en scripts.
+
+```bash
+echo prefix-{a,b,c}-suffix
+```
+Esto generará la siguiente salida
+
+```bash
+prefix-a-suffix prefix-b-suffix prefix-c-suffix
+```
+También se pueden generar secuencias con rangos:
+
+```bash
+echo file_{1..3}.csv
+# file_1.csv file_2.csv file_3.csv
+```
+```bash
+echo {a..c}
+# a b c
+```
+```bash
+echo {1..20..2}
+# 1 3 5 7 9 11 13 15 17 19
+```
+```bash
+echo {001..10}
+# 001 002 003 004 005 006 007 008 009 010
+```
+```bash
+echo {10..1} # 10 9 8 7 6 5 4 3 2 1 
+echo {z..a} # z y x w v u ...
+```
+```bash
+a=1
+echo {$a$..10}
+# 🚫 Esto no funcionará, ya que la expasión de las llaves ocurre antes que las variables.
+```
+```bash
+echo img_{01..05}.jpg
+# img_01.jpg img_02.jpg img_03.jpg img_04.jpg img_05.jpg
+```
+💡 Combinación con Bucles
+La expansión de llaves puede combinarse fácilmente con bucles for para automatizar tareas:
+
+```bash
+for file in 2024-{01..03}.log; do
+    echo "Procesando $file"
+done
+```
+```bash
+Procesando 2024-01.log
+Procesando 2024-02.log
+Procesando 2024-03.log
+```
+También se puede utilizar para borrar ficheros u otro comando.
+
+```bash
+rm 01-{old,new,current,backup}.txt
+```
+Podemos anidar otras llaves
+
+```bash
+rm 01-{old,new,current,{10,20,30}-backup}.txt
+```
+### 5.5.2. Filename Expansion y Globbing
+
+🧠 ¿Qué es Filename Expansion (Globbing)?
+Globbing es el mecanismo por el cual Bash expande patrones especiales (*, ?, [abc], etc.) en la línea de comandos a nombres reales de archivos o directorios que coincidan.
+
+Es muy útil para trabajar con muchos archivos sin tener que escribirlos uno por uno.
+
+| Patrón       | Significado                                                                 |
+|--------------|------------------------------------------------------------------------------|
+| `*`          | Coincide con **cualquier número de caracteres** (incluyendo ninguno)        |
+| `?`          | Coincide con **exactamente un carácter**                                     |
+| `[abc]`      | Coincide con **una sola letra**: `a`, `b` o `c`                              |
+| `[a-z]`      | Coincide con **cualquier carácter en el rango alfabético**                  |
+| `[!abc]`     | Coincide con **cualquier carácter excepto** `a`, `b` o `c`                   |
+| `[!0-9]*`    | Coincide con archivos que **no comienzan con un número**                    |
+| `{a,b,c}`    | Expansión de **lista explícita** (no globbing puro, pero relacionado)       |
+| `[^0-9]*`    | ⚠️ **Sintaxis de regex**, no globbing — se usa con `grep`, `sed`, etc.      |
+
+📌 Ejemplos
+🔸 Usando *
+```bash
+ls *.txt       # Todos los archivos que terminan en .txt
+```
+🔸 Usando ?
+```bash
+ls file?.txt   # Coincide con file1.txt, file2.txt, etc., pero NO con file10.txt
+```
+🔸 Usando rangos
+```bash
+ls file[1-3].txt  # Coincide con file1.txt, file2.txt, file3.txt
+```
+🔸 Usando negación
+```bash
+ls file[!0-9].txt  # Coincide con archivos que no tengan un número después de "file"
+```
+Otro ejemplo
+```bash
+for archivo in data/*.csv; do
+  echo "Procesando $archivo"
+  python procesar.py "$archivo"
+done
+```
+🔧 ¿Dónde se usa globbing?
+En comandos como ls, rm, cp, mv
+
+En scripts con bucles for, while, etc.
+
+Al procesar múltiples archivos con herramientas como tar, cat, etc.
+
+⚠️ Cuidados y buenas prácticas
+
+| Problema                          | Solución o nota                            |
+|----------------------------------|--------------------------------------------|
+| Archivos con espacios            | Citar la variable: `"$archivo"`            |
+| Globbing no encuentra coincidencias | Usa `nullglob` si no quieres errores     |
+| Puede expandir más de lo esperado | Usa `echo` o `set -x` para verificar       |
+
+🔧 Tip: Activar nullglob para evitar errores si no hay coincidencias
+```bash
+shopt -s nullglob
+Por defecto, si no hay coincidencias, el patrón *.csv queda tal cual. Con nullglob, se convierte en nada.
+```
 ---
 
 ## 5.6. Funciones para Reutilizar Código
@@ -899,7 +1327,6 @@ Definir funciones permite reutilizar bloques de código y estructurar mejor los 
 saludar() {
   echo "Hola $1"
 }
-
 saludar "Ana"
 ```
 
@@ -1255,6 +1682,8 @@ Un script bien escrito no solo funciona, también es fácil de mantener y entend
 
 - Usa nombres descriptivos (`procesar_datos.sh` en lugar de `pd.sh`)
 - Añade comentarios explicativos (`# Este bloque valida la conexión`)
+- Si el símbolo `#` va seguido de `!`, no es un comentario. Se utiliza en las cabeceras de los scripts.
+- Hay un truco para hacer comentarios multilínea. Ponemos `:'`, escribimos las diferentes líneas y terminamos con una línea `'`
 - Organiza en bloques lógicos (secciones de variables, funciones, ejecución)
 - Usa `set -e` para evitar errores silenciosos
 - Documenta al inicio el propósito y los argumentos del script
